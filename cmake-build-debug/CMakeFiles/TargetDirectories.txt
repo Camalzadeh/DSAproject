@@ -1,0 +1,3 @@
+C:/Users/Humbat/CLionProjects/DSAproject/cmake-build-debug/CMakeFiles/DSAproject.dir
+C:/Users/Humbat/CLionProjects/DSAproject/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Humbat/CLionProjects/DSAproject/cmake-build-debug/CMakeFiles/rebuild_cache.dir

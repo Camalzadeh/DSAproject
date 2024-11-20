@@ -28,5 +28,7 @@ void freelist(T_student*);
 void splitlist(T_student*, T_student**, T_student**);
 //11
 T_student* mergelists( T_student*, T_student*);
+//additional
+T_student* newStudent(const char* , long , float );
 
 #endif // dsaproject_h

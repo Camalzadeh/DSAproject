@@ -1,16 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "dsaproject.h"
 
-//1
+//1 Yunis work
+bool isIDUnique(T_student* sentinel, long ID) {
+    T_student* current = sentinel->next;
+    while (current) {
+        if (current->ID == ID) {
+            return false;
+        }
+        current = current->next;
+    }
+    return true;
+}
+
 T_student* createstudent(void) {
     T_student* newStudent = (T_student*)malloc(sizeof(T_student));
     if (newStudent == NULL) {
         printf("Memory allocation failed.\n");
         exit(1);
     }
-
     printf("Enter the name of the student: ");
     scanf("%s", newStudent->name);
 
@@ -19,50 +30,48 @@ T_student* createstudent(void) {
 
     printf("Enter the student's grade: ");
     scanf("%f", &newStudent->grade);
-
     newStudent->next = NULL;
-
     return newStudent;
 }
 
-//2
+
+//2 Yunis work
+void displaylist_recursive(T_student* current) {
+    if (current == NULL) {
+        return;
+    }
+    displaylist_recursive(current->next);
+    printf("| %-30s | %-10ld | %-5.3f |\n", current->name, current->ID, current->grade);
+}
+
 void displaylist(T_student* sentinel) {
     if (!sentinel->next) {
         printf("No students in the list.\n");
         return;
     }
-
     printf("List of students:\n");
     printf("--------------------------------------------------\n");
     printf("| %-30s | %-10s | %-5s |\n", "Name", "ID", "Grade");
     printf("--------------------------------------------------\n");
 
-    T_student* current = sentinel->next;
-    while (current) {
-        printf("| %-30s | %-10ld | %-5.3f |\n", current->name, current->ID, current->grade);
-        current = current->next;
-    }
+    displaylist_recursive(sentinel->next);
 }
 
-//3
+//3 Yunis work
 T_student* addstudent(T_student* sentinel, char name[], long ID, float grade) {
-    T_student* newStudent = (T_student*)malloc(sizeof(T_student));
-    if (newStudent == NULL) {
-        printf("Memory allocation failed.\n");
-        exit(1);
+    if (!isIDUnique(sentinel, ID)) {
+        printf("Error: ID %ld is already in use. Cannot add student.\n", ID);
+        return sentinel;
     }
-
-    strcpy(newStudent->name, name);
-    newStudent->ID = ID;
-    newStudent->grade = grade;
-
-    newStudent->next = sentinel->next;
-    sentinel->next = newStudent;
+    T_student* new = newStudent(name, ID, grade);
+    new->next = sentinel->next;
+    sentinel->next = new;
 
     return sentinel;
 }
 
-//4
+
+//4 Yunis work
 int studentcount(T_student* sentinel) {
     int count = 0;
     T_student* current = sentinel->next;
@@ -73,87 +82,112 @@ int studentcount(T_student* sentinel) {
     return count;
 }
 
-//5
+//5 Humbat work
 int findstudent(T_student* sentinel, long ID) {
     T_student* current = sentinel->next;
+    int index=0;
     while (current) {
+
         if (current->ID == ID) {
             printf("Student found:\n");
             printf("--------------------------------------------------\n");
             printf("| %-30s | %-10s | %-5s |\n", "Name", "ID", "Grade");
             printf("--------------------------------------------------\n");
             printf("| %-30s | %-10ld | %-5.3f |\n", current->name, current->ID, current->grade);
-            return 1;
+            return index;
         }
         current = current->next;
+        index++;
     }
     printf("No student with ID %ld found.\n", ID);
-    return 0;
+    return -1;
 }
 
-//6
+//6 Huseyn work
 void deletelaststudent(T_student* sentinel) {
     if (!sentinel->next) {
         printf("No students to delete.\n");
         return;
     }
+    T_student* temp = sentinel->next;
+    sentinel->next = temp->next;
+    printf("Deleted student: %s (ID: %ld)\n", temp->name, temp->ID);
+    free(temp);
+}
 
-    T_student* current = sentinel->next;
-    if (!current->next) {
-        free(current);
-        sentinel->next = NULL;
-        return;
+
+//Humbat work
+T_student* split(T_student* head) {
+    T_student* fast = head;
+    T_student* slow = head;
+    while (fast != NULL && fast->next != NULL) {
+        fast = fast->next->next;
+        if (fast != NULL) {
+            slow = slow->next;
+        }
     }
 
-    while (current->next->next) {
+    T_student* temp = slow->next;
+    slow->next = NULL;
+    return temp;
+}
+
+T_student* merge(T_student* first, T_student* second) {
+    T_student* sentinel = newStudent("",0,0);
+    T_student* current = sentinel;
+
+    while (first != NULL && second != NULL) {
+        if (first->grade < second->grade) {
+            current->next = first;
+            first = first->next;
+        } else {
+            current->next = second;
+            second = second->next;
+        }
         current = current->next;
     }
 
-    free(current->next);
-    current->next = NULL;
-}
-
-//7
-void sortlist(T_student* sentinel) {
-    T_student* sorted = NULL;
-    T_student* current = sentinel->next;
-
-    while (current) {
-        T_student* next = current->next;
-        if (!sorted || sorted->grade >= current->grade) {
-            current->next = sorted;
-            sorted = current;
-        } else {
-            T_student* temp = sorted;
-            while (temp->next && temp->next->grade < current->grade) {
-                temp = temp->next;
-            }
-            current->next = temp->next;
-            temp->next = current;
-        }
-        current = next;
+    if (first != NULL) {
+        current->next = first;
+    } else {
+        current->next = second;
     }
 
-    sentinel->next = sorted;
+    T_student* mergedListHead = sentinel->next;
+    free(sentinel);
+    return mergedListHead;
 }
 
-//8
+T_student* mergesort(T_student* head) {
+    if (head == NULL || head->next == NULL) {
+        return head;
+    }
+    T_student* second = split(head);
+
+    head = mergesort(head);
+    second = mergesort(second);
+
+    return merge(head, second);
+}
+
+void sortlist(T_student* sentinel) {
+    sentinel->next=mergesort(sentinel->next);
+}
+
+//8 Shabnam work
 float averageexam(T_student* sentinel) {
     T_student* current = sentinel->next;
     float sum = 0;
     int count = 0;
-
     while (current) {
         sum += current->grade;
         count++;
         current = current->next;
     }
-
     if (count == 0) {
         printf("No students in the list.\n");
         return 0;
     }
-
     float average = sum / count;
     if (average > 65) {
         printf("Average is greater than 65.\n");
@@ -162,11 +196,10 @@ float averageexam(T_student* sentinel) {
     } else {
         printf("Average is less than 50.\n");
     }
-
     return average;
 }
 
-//9
+//9 Huseyn work
 void freelist(T_student* sentinel) {
     T_student* current = sentinel->next;
     while (current) {
@@ -177,7 +210,7 @@ void freelist(T_student* sentinel) {
     free(sentinel);
 }
 
-//10
+//10 Shabnam work
 void splitlist(T_student* sentinel, T_student** highLevel, T_student** lowLevel) {
     *highLevel = (T_student*)malloc(sizeof(T_student));
     *lowLevel = (T_student*)malloc(sizeof(T_student));
@@ -215,30 +248,16 @@ void splitlist(T_student* sentinel, T_student** highLevel, T_student** lowLevel)
     }
 }
 
-//11
+//11 Huseyn work
 T_student* mergelists(T_student* firstSentinel, T_student* secondSentinel) {
-    if (!firstSentinel || !secondSentinel) {
-        printf("Error: One or both sentinels are NULL.\n");
-        return NULL;
-    }
-
-    if (!firstSentinel->next) {
-        free(firstSentinel);
-        return secondSentinel;
-    }
-
-    if (!secondSentinel->next) {
-        free(secondSentinel);
-        return firstSentinel;
-    }
-
-    T_student* current = firstSentinel;
-    while (current->next) {
-        current = current->next;
-    }
-
-    current->next = secondSentinel->next;
-    free(secondSentinel);
-
-    return firstSentinel;
+    return merge(firstSentinel->next,secondSentinel);
+}
+//additional Humbat works
+T_student* newStudent(const char* name, long ID, float grade) {
+    T_student* temp = (T_student*)malloc(sizeof(T_student));
+    strcpy(temp->name, name);
+    temp->ID = ID;
+    temp->grade = grade;
+    temp->next = NULL;
+    return temp;
 }

@@ -15,6 +15,10 @@ bool isIDUnique(T_student* sentinel, long ID) {
     }
     return true;
 }
+bool isValidGrade(float grade) {
+    return grade >= 0.0 && grade <= 100.0;
+}
+
 
 T_student* createstudent(void) {
     T_student* newStudent = (T_student*)malloc(sizeof(T_student));
@@ -25,10 +29,10 @@ T_student* createstudent(void) {
     printf("Enter the name of the student: ");
     scanf("%s", newStudent->name);
 
-    printf("Enter the student's ID: ");
+    printf("Enter the student's ID (ID must be unique): ");
     scanf("%ld", &newStudent->ID);
 
-    printf("Enter the student's grade: ");
+    printf("Enter the student's grade between (0,100): ");
     scanf("%f", &newStudent->grade);
     newStudent->next = NULL;
     return newStudent;
@@ -61,6 +65,10 @@ void displaylist(T_student* sentinel) {
 T_student* addstudent(T_student* sentinel, char name[], long ID, float grade) {
     if (!isIDUnique(sentinel, ID)) {
         printf("Error: ID %ld is already in use. Cannot add student.\n", ID);
+        return sentinel;
+    }
+    if(!isValidGrade(grade)) {
+        printf("Error: grade %f must be in (0,100).\n", grade);
         return sentinel;
     }
     T_student* new = newStudent(name, ID, grade);

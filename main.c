@@ -56,9 +56,9 @@ int main() {
                 char name[30];
                 printf("Enter name: ");
                 scanf("%s", name);
-                printf("Enter ID: ");
+                printf("Enter ID (ID must be unique): ");
                 scanf("%ld", &id);
-                printf("Enter grade: ");
+                printf("Enter grade between (0,100): ");
                 scanf("%f", &grade);
                 sentinel = addstudent(sentinel, name, id, grade);
                 break;

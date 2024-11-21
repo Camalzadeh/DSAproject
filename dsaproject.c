@@ -260,7 +260,7 @@ void splitlist(T_student* sentinel, T_student** highLevel, T_student** lowLevel)
 T_student* mergelists(T_student* firstSentinel, T_student* secondSentinel) {
     return merge(firstSentinel->next,secondSentinel);
 }
-//additional Humbat works
+//additional
 T_student* newStudent(const char* name, long ID, float grade) {
     T_student* temp = (T_student*)malloc(sizeof(T_student));
     strcpy(temp->name, name);

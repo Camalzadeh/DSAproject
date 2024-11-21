@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "dsaproject.h" // Include your header file
+#include "dsaproject.h" 
 
 int main() {
     T_student* sentinel = newStudent("",0,0);
